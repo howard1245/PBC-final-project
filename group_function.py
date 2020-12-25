@@ -1,9 +1,12 @@
+import pygame as pg
 from datetime import datetime
 import matplotlib
 import datetime as dt
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.font_manager
+import matplotlib.backends.backend_agg as agg
+
 
 dateformat = "%Y/%m/%d"
 dateFormatter = "%Y/%m/%d %H:%M"
@@ -137,7 +140,7 @@ class Ios:
             hot_name.append(hot[i][0])
             hot_times.append(hot[i][1])
 
-        plt.figure(figsize=(10, 6))  # 設定圖片大小
+        fig_hot = plt.figure(figsize=(7, 4))  # 設定圖片大小
         x_labels = np.array(hot_name)  # 人名
         height = np.array(hot_times)  # 總回應數
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']
@@ -146,7 +149,15 @@ class Ios:
         plt.bar(x_labels, height, width=0.5)
 
         plt.ylabel("總回應則數")  # 設定y軸標題
-        plt.show()
+        canvas = agg.FigureCanvasAgg(fig_hot)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        surf = pg.image.fromstring(raw_data, size, "RGB")
+        return surf
+
+        # plt.show()
         # print(hot_name, hot_times)
         # print(hot(lines))
 
@@ -193,11 +204,18 @@ class Ios:
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']
 
         # 設定圖片大小標題
-        plt.figure(figsize=(10, 6))
+        fig_dot = plt.figure(figsize=(7, 4))  # 設定圖片大小
         plt.title('誰是句點王')  # 設定圖形標題
         plt.bar(x_labels, height, width=0.5)
         plt.ylabel("每日平均被回話時間(分鐘)")  # 設定y軸標題
-        plt.show()
+        canvas = agg.FigureCanvasAgg(fig_dot)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        surf = pg.image.fromstring(raw_data, size, "RGB")
+        return surf
+        # plt.show()
 
     ##################################################
     '''# 單日24小時，各時段平均訊息數（折線圖）'''
@@ -241,13 +259,20 @@ class Ios:
         height = np.array(day[0])  # 總回應則數
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']
 
-        plt.figure(figsize=(10, 6))
+        fig_day = plt.figure(figsize=(4, 3))  # 設定圖片大小
         plt.title('24小時平均訊息數長條圖')  # 設定圖形標題
         plt.bar(x_labels, height, width=0.5)
 
         plt.ylabel("訊息數")  # 設定x軸標題
         plt.xlim((-0.5, 24))
-        plt.show()
+        canvas = agg.FigureCanvasAgg(fig_day)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        surf = pg.image.fromstring(raw_data, size, "RGB")
+        # plt.show()
+        return surf
 
     '''# 從古至今聊天訊息數'''
     def active_function(self):
@@ -297,11 +322,11 @@ class Ios:
         past_msg = past(Ios.lines)
         # print(past_msg[3][0][0])
         # print(past_msg)
-        if past_msg[2] != "":
+        if past_msg[2] != "":  # 荒廢文字
             print(str(past_msg[2]))
 
         # 畫長條圖
-        plt.figure(figsize=(12, 6))
+        fig_active = plt.figure(figsize=(4, 3))  # 設定圖片大小
         x_labels = np.array(past_msg[0])  # 過去到現在的時間
 
         height = np.array(past_msg[1])  # 訊息數
@@ -313,6 +338,7 @@ class Ios:
         plt.ylabel("訊息數")  # 設定y軸標題
         ax = plt.gca()
         ax.axes.xaxis.set_visible(False)
+        # plt.show()
         '''想要顯示日期 但如果特別高峰的前五名太集中日期會擠在一起
         my_xticks = ax.get_xticks() 
         tmp = []
@@ -320,7 +346,13 @@ class Ios:
             tmp.append(my_xticks[past_msg[3][i][0]])
         plt.xticks(tmp, visible=True) 
         plt.xticks(rotation=45,  ha='right', fontsize=5)'''
-        plt.show()
+        canvas = agg.FigureCanvasAgg(fig_active)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        surf = pg.image.fromstring(raw_data, size, "RGB")
+        return surf
 
 
 # android系統的群組功能
@@ -455,7 +487,7 @@ class Android:
             hot_name.append(hot[i][0])
             hot_times.append(hot[i][1])
 
-        plt.figure(figsize=(10, 6))  # 設定圖片大小
+        fig_hot = plt.figure(figsize=(7, 4))  # 設定圖片大小
         x_labels = np.array(hot_name)  # 人名
         height = np.array(hot_times)  # 總回應數
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']
@@ -464,7 +496,14 @@ class Android:
         plt.bar(x_labels, height, width=0.5)
 
         plt.ylabel("總回應則數")  # 設定y軸標題
-        plt.show()
+        canvas = agg.FigureCanvasAgg(fig_hot)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        surf = pg.image.fromstring(raw_data, size, "RGB")
+        return surf
+        # plt.show()
         # print(hot_name, hot_times)
         # print(hot(lines))
 
@@ -514,11 +553,18 @@ class Android:
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']
 
         # 設定圖片大小標題
-        plt.figure(figsize=(10, 6))
+        fig_dot = plt.figure(figsize=(7, 4))  # 設定圖片大小
         plt.title('誰是句點王')  # 設定圖形標題
         plt.bar(x_labels, height, width=0.5)
         plt.ylabel("每日平均被回話時間(分鐘)")  # 設定y軸標題
-        plt.show()
+        canvas = agg.FigureCanvasAgg(fig_dot)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        surf = pg.image.fromstring(raw_data, size, "RGB")
+        return surf
+        # plt.show()
 
     ##################################################
     '''# 單日24小時，各時段平均訊息數（折線圖）'''
@@ -562,13 +608,20 @@ class Android:
         height = np.array(day[0])  # 總回應則數
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']
 
-        plt.figure(figsize=(10, 6))
+        fig_day = plt.figure(figsize=(4, 3))  # 設定圖片大小
         plt.title('24小時平均訊息數長條圖')  # 設定圖形標題
         plt.bar(x_labels, height, width=0.5)
 
         plt.ylabel("訊息數")  # 設定x軸標題
         plt.xlim((-0.5, 24))
-        plt.show()
+        canvas = agg.FigureCanvasAgg(fig_day)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        surf = pg.image.fromstring(raw_data, size, "RGB")
+        return surf
+        # plt.show()
 
     '''# 從古至今聊天訊息數'''
     def active_function(self):
@@ -624,7 +677,7 @@ class Android:
             print(str(past_msg[2]))
 
         # 畫長條圖
-        plt.figure(figsize=(12, 6))
+        fig_active = plt.figure(figsize=(4, 3))  # 設定圖片大小
         x_labels = np.array(past_msg[0])  # 過去到現在的時間
 
         height = np.array(past_msg[1])  # 訊息數
@@ -636,6 +689,13 @@ class Android:
         plt.ylabel("訊息數")  # 設定y軸標題
         ax = plt.gca()
         ax.axes.xaxis.set_visible(False)
+        canvas = agg.FigureCanvasAgg(fig_active)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        surf = pg.image.fromstring(raw_data, size, "RGB")
+
         '''想要顯示日期 但如果特別高峰的前五名太集中日期會擠在一起
         my_xticks = ax.get_xticks() 
         tmp = []
@@ -643,11 +703,9 @@ class Android:
             tmp.append(my_xticks[past_msg[3][i][0]])
         plt.xticks(tmp, visible=True) 
         plt.xticks(rotation=45,  ha='right', fontsize=5)'''
-        plt.show()
+        # plt.show()
+        return surf
 
-
-my_ios = Ios()
-my_android = Android()
 
 # myphone = Android()
 # myphone.input_file()

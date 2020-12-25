@@ -15,6 +15,11 @@ class Data:
     path = ''  # 檔案路徑
     system = ''  # 手機系統
     individual_group = ''  # 個人或群組聊天
+    # 群組對話圖片
+    img = ''  # 現在要呈現的圖片名稱
+    surf = ''  # 夯夯和句點王
+    surf_d = ''  # 群組一天內圖片
+    surf_a = ''  # 群組從古至今圖片
 
 
 # 跳視窗匯檔案class
@@ -109,21 +114,27 @@ def import_data():
 def ios_android_function(system, function):
     if system == 'ios':  # 手機系統選ios，執行ios的群組功能
         if function == '誰是夯夯':
-            ios_g.hot_function()
+            surf = ios_g.hot_function()
+            return surf
         elif function == '誰是句點王':
-            ios_g.dot_function()
+            surf = ios_g.dot_function()
+            return surf
         elif function == '活躍時間':
-            ios_g.day_function()
-            ios_g.active_function()
+            surf_d = ios_g.day_function()
+            surf_a = ios_g.active_function()
+            return surf_d, surf_a
 
     elif system == 'android':
         if function == '誰是夯夯':
-            android_g.hot_function()
+            surf = android_g.hot_function()
+            return surf
         elif function == '誰是句點王':
-            android_g.dot_function()
+            surf = android_g.dot_function()
+            return surf
         elif function == '活躍時間':
-            android_g.day_function()
-            android_g.active_function()
+            surf_d = android_g.day_function()
+            surf_a = android_g.active_function()
+            return surf_d, surf_a
 
 
 # 個人頁面
@@ -160,6 +171,8 @@ def individual():
 
 # 群組頁面
 def group():
+    Data.path = ''  # 路徑清空
+
     back = False
     # myphone = group_function.Android
     while not back:
@@ -171,7 +184,17 @@ def group():
         button_active = button("活躍時間", 450, 100, 100, 50, dark, light)
         button_back = button("回首頁", 650, 100, 100, 50, dark, light)
 
+        if Data.img == '誰是夯夯' or Data.img == '誰是句點王':
+            screen.blit(Data.surf, (50, 175))  # 圖片擺放位置
+            pg.display.flip()
+        elif Data.img == '活躍時間':
+            screen.blit(Data.surf_d, (30, 210))
+            screen.blit(Data.surf_a, (400, 210))
+            pg.display.flip()
+
+
         pg.display.update()
+
         for ev in pg.event.get():
             if ev.type == pg.QUIT:
                 pg.quit()
@@ -179,13 +202,16 @@ def group():
             if ev.type == pg.MOUSEBUTTONDOWN:
                 # If the button collides with the mouse position.
                 if button_hot.collidepoint(ev.pos):
-                    ios_android_function(Data.system, '誰是夯夯')
+                    Data.surf = ios_android_function(Data.system, '誰是夯夯')  # 要呈現的圖片
+                    Data.img = '誰是夯夯'
 
                 elif button_dot.collidepoint(ev.pos):
-                    ios_android_function(Data.system, '誰是句點王')
+                    Data.surf = ios_android_function(Data.system, '誰是句點王')
+                    Data.img = '誰是句點王'
 
                 elif button_active.collidepoint(ev.pos):
-                    ios_android_function(Data.system, '活躍時間')
+                    Data.surf_d, Data.surf_a = ios_android_function(Data.system, '活躍時間')
+                    Data.img = '活躍時間'
 
                 elif button_back.collidepoint(ev.pos):
                     game_intro()
@@ -242,7 +268,7 @@ def choice():
 
                             # 依照手機系統處理資料
                             if Data.system == 'ios':
-                                ios_g.input_file()
+                                ios_g.input_file(Data.path)
                             elif Data.system == 'android':
                                 android_g.input_file(Data.path)
 
@@ -253,6 +279,10 @@ def choice():
 def game_intro():
     intro = True
     while intro:
+
+        Data.img = ''  # 現在要呈現的圖片名稱清空
+        Data.individual_group = ''  # 群組或個人選擇清空
+        Data.system = ''  # 系統選擇清空
 
         screen.fill(white)
         message_to_screen_center("歡迎來到遊戲", blue, -220, 'large')
