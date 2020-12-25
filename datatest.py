@@ -3,12 +3,15 @@ from PyQt5.QtWidgets import QFileDialog
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import*
+import group_function  # 群組的py檔
 
 pg.init()
+android_g = group_function.Android()  # 群組py檔的Android()
+ios_g = group_function.Ios()  # 群組py檔的Ios()
 
 
-# 對話紀錄檔class
-class Data():
+# 對話紀錄class
+class Data:
     path = ''  # 檔案路徑
     system = ''  # 手機系統
     individual_group = ''  # 個人或群組聊天
@@ -33,7 +36,7 @@ dark = (170, 170, 170)
 light = (100, 100, 100)
 
 # 設定字體大小
-small_font = pg.font.SysFont('appleligothicmedium', 20)
+small_font = pg.font.SysFont('appleligothicmedium', 18)
 med_font = pg.font.SysFont('appleligothicmedium', 30)
 large_font = pg.font.SysFont('appleligothicmedium', 50)
 
@@ -102,6 +105,27 @@ def import_data():
         Data.path = myshow.msg()
 
 
+# 依據手機系統分別執行功能
+def ios_android_function(system, function):
+    if system == 'ios':  # 手機系統選ios，執行ios的群組功能
+        if function == '誰是夯夯':
+            ios_g.hot_function()
+        elif function == '誰是句點王':
+            ios_g.dot_function()
+        elif function == '活躍時間':
+            ios_g.day_function()
+            ios_g.active_function()
+
+    elif system == 'android':
+        if function == '誰是夯夯':
+            android_g.hot_function()
+        elif function == '誰是句點王':
+            android_g.dot_function()
+        elif function == '活躍時間':
+            android_g.day_function()
+            android_g.active_function()
+
+
 # 個人頁面
 def individual():
     back = False
@@ -137,12 +161,13 @@ def individual():
 # 群組頁面
 def group():
     back = False
+    # myphone = group_function.Android
     while not back:
         screen.fill(white)
         message_to_screen_side("群組頁面", green, 50, 50, 'medium')
 
-        button_most = button("誰的話最多", 50, 100, 100, 50, dark, light)
-        button_dot = button("句點王", 250, 100, 100, 50, dark, light)
+        button_hot = button("誰是夯夯", 50, 100, 100, 50, dark, light)
+        button_dot = button("誰是句點王", 250, 100, 100, 50, dark, light)
         button_active = button("活躍時間", 450, 100, 100, 50, dark, light)
         button_back = button("回首頁", 650, 100, 100, 50, dark, light)
 
@@ -153,17 +178,20 @@ def group():
                 quit()
             if ev.type == pg.MOUSEBUTTONDOWN:
                 # If the button collides with the mouse position.
-                if button_most.collidepoint(ev.pos):
-                    pass
+                if button_hot.collidepoint(ev.pos):
+                    ios_android_function(Data.system, '誰是夯夯')
+
                 elif button_dot.collidepoint(ev.pos):
-                    pass
+                    ios_android_function(Data.system, '誰是句點王')
+
                 elif button_active.collidepoint(ev.pos):
-                    pass
+                    ios_android_function(Data.system, '活躍時間')
+
                 elif button_back.collidepoint(ev.pos):
                     game_intro()
 
 
-# 選擇手機系統、個人群組頁面
+# 基本設定（選擇手機系統、個人群組頁面）
 def choice():
     back = False
     while not back:
@@ -211,7 +239,14 @@ def choice():
                         if Data.individual_group == '個人聊天':
                             individual()
                         elif Data.individual_group == '群組聊天':
-                            group()
+
+                            # 依照手機系統處理資料
+                            if Data.system == 'ios':
+                                ios_g.input_file()
+                            elif Data.system == 'android':
+                                android_g.input_file(Data.path)
+
+                            group()  # 群組頁面
 
 
 # 遊戲首頁
