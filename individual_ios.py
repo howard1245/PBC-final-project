@@ -6,6 +6,10 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.font_manager
 import matplotlib.backends.backend_agg as agg
+# from wordcloud import WordCloud
+import PIL .Image as image
+import jieba
+
 
 dateformat = "%Y/%m/%d"
 dateFormatter = "%Y/%m/%d %H:%M"
@@ -13,8 +17,10 @@ timeformat = "%H:%M"
 calltimeformat = "%H:%M:%S"
 plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']
 
+
 class Ios:
     line = ""
+    date = ''
 
     def inputfile(self, path):
         with open(file=path, mode="r", encoding="utf-8") as f:
@@ -87,8 +93,8 @@ class Ios:
                 datetemp = Ios.line[i][0]
                 datetime.strptime(datetemp, dateformat)
             except:
-                Ios.line[i].insert(0, date)  # date
-            date = Ios.line[i][0]
+                Ios.line[i].insert(0, Ios.date)  # date
+            Ios.date = Ios.line[i][0]
         # print(lines_for_word)
         delete = list()
         for i in range(len(Ios.line)):
@@ -137,10 +143,10 @@ class Ios:
             if Ios.line[i] == ['']:
                 try:
                     # date 把後面沒用的星期幾刪掉
-                    date = Ios.line[i + 1][0][:-3]
+                    Ios.date = Ios.line[i + 1][0][:-3]
 
                     # 要再檢查日期是不是符合格式 因為有智障一則訊息裡包含空行
-                    datetime.strptime(date, dateformat)
+                    datetime.strptime(Ios.date, dateformat)
 
                     # 把空行和日期行位置append到indexes list中，等等加完日期就可以刪掉
                     # 空行
@@ -155,7 +161,7 @@ class Ios:
                         if k + 1 > len(Ios.line):
                             break
 
-                        Ios.line[k].insert(0, date)  # date
+                        Ios.line[k].insert(0, Ios.date)  # date
 
                         if k + 1 == len(Ios.line):
                             break
@@ -185,8 +191,8 @@ class Ios:
                 datetemp = Ios.line[i][0]
                 datetime.strptime(datetemp, dateformat)
             except:
-                Ios.line[i].insert(0, date)  # date
-            date = Ios.line[i][0]
+                Ios.line[i].insert(0, Ios.date)  # date
+            Ios.date = Ios.line[i][0]
 
         delete = list()
         for i in range(len(Ios.line)):
@@ -253,11 +259,11 @@ class Ios:
         totalwords = pie_words(Ios.line)
 
         # 畫雙方字數圓餅圖
-        fig_pie = plt.figure(figsize=(4, 3))
+        fig_pie = plt.figure(figsize=(3.5, 3.5))
         labels = [totalwords[2][0], totalwords[2][1]]
         word = [totalwords[0], totalwords[1]]
         explode = [0, 0]  # 0則不突凸出，值越大 則凸出越大
-        plt.pie(word, explode=explode, labels=labels, autopct="%3.1f%%")
+        plt.pie(word, explode=explode, labels=labels, autopct="%3.1f%%", colors=['Pink', 'lightblue'])
         plt.title('雙方總字數比例')  # 設定圖形標題
         plt.legend(loc="best")
         # plt.show()
@@ -368,13 +374,13 @@ class Ios:
         both_totalwords = linechart_words(Ios.line)
 
         # 折線圖
-        fig_line = plt.figure(figsize=(4, 3))
+        fig_line = plt.figure(figsize=(5, 5))
         plt.xticks(fontsize=7)
         plt.yticks(fontsize=7)
         plt.plot(both_totalwords[0], both_totalwords[1], marker='o', ms=5,
-                 label=str(both_totalwords[4][0]) + "的近30日總字數")
+                 label=str(both_totalwords[4][0]) + "的近30日總字數", color='Pink')
         plt.plot(both_totalwords[2], both_totalwords[3], marker='s', ms=5,
-                 label=str(both_totalwords[4][1]) + "的近30日總字數")
+                 label=str(both_totalwords[4][1]) + "的近30日總字數", color='lightblue')
         plt.xticks(rotation=45, ha='right')
 
         # 顯示圖例
@@ -419,7 +425,7 @@ class Ios:
         labels = [sent[0][0], sent[1][0]]
         sentences = [sent[0][1], sent[1][1]]
         explode = [0, 0]  # 0則不突凸出，值越大 則凸出越大
-        plt.pie(sentences, explode=explode, labels=labels, autopct="%3.1f%%")
+        plt.pie(sentences, explode=explode, labels=labels, autopct="%3.1f%%", colors=['Gold', 'YellowGreen'])
         plt.title('雙方回覆則數比例')  # 設定圖形標題
 
         plt.legend(loc="best")
@@ -521,8 +527,8 @@ class Ios:
         plt.title('近30日雙方總回覆則數折線圖')  # 設定圖形標題
         plt.xlabel("日期")  # 設定x軸標題
         plt.ylabel("回覆則數")  # 設定y軸標題
-        plt.plot(temp[0], temp[1], label=str(temp[4][0]) + "的回覆則數")
-        plt.plot(temp[2], temp[3], label=str(temp[4][1]) + "的回覆則數")
+        plt.plot(temp[0], temp[1], label=str(temp[4][0]) + "的回覆則數", color='Gold')
+        plt.plot(temp[2], temp[3], label=str(temp[4][1]) + "的回覆則數", color='YellowGreen')
         plt.xticks(rotation=45, ha='right')
         # 顯示圖例
         plt.legend(loc='best', fontsize=10)
@@ -577,8 +583,8 @@ class Ios:
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']
 
         plt.title('24小時平均訊息數長條圖')  # 設定圖形標題
-        plt.bar(x_labels, height, width=0.5)
-        plt.xlabel("時間(24小時制)")  # 設定y軸標題
+        plt.bar(x_labels, height, width=0.5, color=['YellowGreen'])
+        # plt.xlabel("時間(24小時制)")  # 設定y軸標題
         plt.ylabel("總回應則數")  # 設定x軸標題
         plt.xlim((-0.5, 24))
         # plt.show()
@@ -760,11 +766,11 @@ class Ios:
             if 80 <= i:
                 keyword_level.append(5)
 
-        keyword_type = ['「哈」的使用頻率', '變態程度', '髒話使用', '學術討論', '關於「吃」']
+        keyword_type = ['「哈」' + '\n' + '的使用頻率', '變態程度', '髒話使用', '學術討論', '關於「吃」']
         y = np.arange(len(keyword_type))  # 產生 Y 軸座標序列
         x = np.arange(0, 6, 1)  # 產生 X 軸座標序列
-        fig_square = plt.figure(figsize=(12, 6))  # 設定圖形大小
-        plt.barh(y, keyword_level)  # 繪製長條圖
+        fig_square = plt.figure(figsize=(8, 6))  # 設定圖形大小
+        plt.barh(y, keyword_level, color=['orange', 'gold', 'lightgreen', 'lightblue', 'plum'])  # 繪製長條圖
         plt.yticks(y, keyword_type)  # 設定 Y 軸刻度標籤
         x_ticks = np.arange(0, 6, 1)  # X 軸刻度陣列
         plt.xticks(x, x_ticks)  # 設定 X 軸刻度標籤
@@ -932,8 +938,8 @@ class Ios:
 
         # 畫雙方通話時間圓餅圖
         if calltime[0][1] != 0 and calltime[1][1] != 0:
-            print(str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + str(calltime[0][1]))
-            print(str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + str(calltime[1][1]))
+            call1 = str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + str(calltime[0][1])
+            call2 = str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + str(calltime[1][1])
             fig_pie = plt.figure(figsize=(4, 3))
             labels = [calltime[0][0], calltime[1][0]]
             calltime_pie = [calltime[0][1], calltime[1][1]]
@@ -950,8 +956,8 @@ class Ios:
             surf = pg.image.fromstring(raw_data, size, "RGB")
 
         if calltime[0][1] == 0 and calltime[1][1] != 0:  # 只有第一人打過電話
-            print(str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + str(calltime[0][1]))
-            print(str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + str(calltime[1][1]))
+            call1 = str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + str(calltime[0][1])
+            call2 = str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + str(calltime[1][1])
             fig_pie = plt.figure(figsize=(4, 3))
             labels = [calltime[1][0]]  # 名字
             calltime_pie = [1]  # 通話時間
@@ -967,8 +973,8 @@ class Ios:
             surf = pg.image.fromstring(raw_data, size, "RGB")
 
         if calltime[0][1] != 0 and calltime[1][1] == 0:  # 只有第二人打過電話
-            print(str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + str(calltime[0][1]))
-            print(str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + str(calltime[1][1]))
+            call1 = str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + str(calltime[0][1])
+            call2 = str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + str(calltime[1][1])
             fig_pie = plt.figure(figsize=(4, 3))
             labels = [calltime[0][0]]  # 名字
             calltime_pie = [1]  # 通話時間
@@ -984,7 +990,9 @@ class Ios:
             surf = pg.image.fromstring(raw_data, size, "RGB")
 
         if calltime[0][1] == 0 and calltime[1][1] == 0:
-            print("你們還沒有通話過喔")
+            call1 = str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + '0'
+            call2 = str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + '0'
+            surf = "你們還沒有通話過喔"
 
         ###############################################################################
         '''近30日雙方通話次數折線圖'''
@@ -1236,7 +1244,7 @@ class Ios:
         size = canvas.get_width_height()
         surf3 = pg.image.fromstring(raw_data, size, "RGB")
 
-        return surf, surf2, surf3  # 3
+        return surf, surf2, surf3, call1, call2  # 3
 
 
     def others(self):
@@ -1266,7 +1274,7 @@ class Ios:
         sticker12 = str(name[1]) + "貼圖數: " + str(sticker_2)
 
         # 畫雙方貼圖數圓餅圖
-        fig_pie = plt.figure(figsize=(4, 3))  # 設定圖形大小
+        fig_pie = plt.figure(figsize=(3.5, 3.5))  # 設定圖形大小
         labels = [name[0], name[1]]
         sticker = [sticker_1, sticker_2]
         explode = [0, 0]  # 0則不突凸出，值越大 則凸出越大
@@ -1284,8 +1292,6 @@ class Ios:
 
 
         '''平均回覆時間'''
-
-
         def replytime(list_message):
             # dict item存list: [他人回話間隔時間(分鐘),別人有回過他的他的訊息次數,平均間隔時間(分鐘)]
             member = dict()
@@ -1324,7 +1330,7 @@ class Ios:
         sticker21 = str(name[0]) + "等待回覆的平均時間: " + str(round(reply_timelist_1[1], 2))
         sticker22 = str(name[1]) + "等待回覆的平均時間: " + str(round(reply_timelist_2[1], 2))
         # print(reply_timelist_1, reply_timelist_2)
-        fig_square = plt.figure(figsize=(10, 6))
+        fig_square = plt.figure(figsize=(5, 5))
         x_labels = np.array([reply_timelist_1[0], reply_timelist_2[0]])
         height = np.array([reply_timelist_1[1], reply_timelist_2[1]])
         plt.bar(x_labels, height, width=0.3)

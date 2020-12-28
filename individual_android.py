@@ -6,11 +6,15 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.font_manager
 import matplotlib.backends.backend_agg as agg
+# from wordcloud import WordCloud
+import PIL .Image as image
+import jieba
 
 dateformat = "%Y/%m/%d"
 dateFormatter = "%Y/%m/%d %H:%M"
 timeformat = "%H:%M"
 calltimeformat = "%H:%M:%S"
+
 
 class Android:
     line = ""
@@ -266,11 +270,11 @@ class Android:
         totalwords = pie_words(Android.line)
         # print(totalwords)[7493, 11004, ['映權姑姑', '昀真']]
         # 畫雙方字數圓餅圖
-        fig_pie = plt.figure(figsize=(4, 3))  # 設定圖形大小
+        fig_pie = plt.figure(figsize=(3.5, 3.5))  # 設定圖形大小
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']  # 匯入中文字型
         labels = [totalwords[2][0], totalwords[2][1]]  # 名字list
         word = [totalwords[0], totalwords[1]]  # 字數list
-        plt.pie(word, labels=labels, autopct="%3.1f%%")
+        plt.pie(word, labels=labels, autopct="%3.1f%%", colors=['Pink', 'lightblue'])
         plt.title('從古至今雙方總字數圓餅圖')  # 設定圖形標題
         plt.legend(loc="best")
 
@@ -397,14 +401,14 @@ class Android:
         both_totalwords = linechart_words(Android.line)
         # print(both_totalwords)
         # 折線圖
-        fig_line = plt.figure(figsize=(4, 3))  # 設定圖形大小
+        fig_line = plt.figure(figsize=(5, 5))  # 設定圖形大小
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']  # 匯入中文字型
         plt.xticks(fontsize=8)  # x軸刻度大小
         plt.yticks(fontsize=8)  # y軸刻度大小
         plt.plot(both_totalwords[0], both_totalwords[1], marker='o', ms=5,
-                 label=str(both_totalwords[4][0]) + "的近30日總字數")
+                 label=str(both_totalwords[4][0]) + "的近30日總字數", color='Pink')
         plt.plot(both_totalwords[2], both_totalwords[3], marker='s', ms=5,
-                 label=str(both_totalwords[4][1]) + "的近30日總字數")
+                 label=str(both_totalwords[4][1]) + "的近30日總字數", color='lightblue')
         plt.xticks(rotation=45, ha='right')
         # 顯示圖例
         plt.legend(loc='best', fontsize=10)
@@ -442,11 +446,11 @@ class Android:
         sent = sentence(Android.line)
         # print(sent)
         # 畫雙方回覆則數圓餅圖
-        fig_line = plt.figure(figsize=(4, 3))  # 設定圖形大小
+        fig_line = plt.figure(figsize=(4,3))  # 設定圖形大小
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']  # 匯入中文字型
         labels = [sent[0][0], sent[1][0]]  # 名字
         sentences = [sent[0][1], sent[1][1]]  # 訊息數
-        plt.pie(sentences, labels=labels, autopct="%3.1f%%")
+        plt.pie(sentences, labels=labels, autopct="%3.1f%%", colors=['Gold', 'YellowGreen'])
         plt.title('從古至今雙方回覆則數圓餅圖')  # 設定圖形標題
         plt.legend(loc="best")
 
@@ -546,8 +550,8 @@ class Android:
         plt.yticks(fontsize=7)
         plt.title('近30日雙方總訊息數折線圖')  # 設定圖形標題
         plt.ylabel("訊息數")  # 設定y軸標題
-        plt.plot(temp[0], temp[1], marker='o', ms=5, label=str(temp[4][0]) + "的訊息數")
-        plt.plot(temp[2], temp[3], marker='s', ms=5, label=str(temp[4][1]) + "的訊息數")
+        plt.plot(temp[0], temp[1], marker='o', ms=5, label=str(temp[4][0]) + "的訊息數", color='Gold')
+        plt.plot(temp[2], temp[3], marker='s', ms=5, label=str(temp[4][1]) + "的訊息數", color='YellowGreen')
         plt.xticks(rotation=45, ha='right')
         # 顯示圖例
         plt.legend(loc='best', fontsize=10)
@@ -603,8 +607,8 @@ class Android:
         fig_square = plt.figure(figsize=(4, 3))  # 設定圖形大小
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']
         plt.title('24小時平均訊息數長條圖')  # 設定圖形標題
-        plt.bar(x_labels, height, width=0.5)
-        plt.xlabel("時間(24小時制)")  # 設定y軸標題
+        plt.bar(x_labels, height, width=0.5, color=['YellowGreen'])
+        # plt.xlabel("時間(24小時制)")  # 設定y軸標題
         plt.ylabel("訊息數")  # 設定x軸標題
         plt.xlim((-0.5, 24))
 
@@ -809,11 +813,11 @@ class Android:
             if 80 <= i:
                 keyword_level.append(5)
 
-        keyword_type = ['「哈」的使用頻率', '變態程度', '髒話使用', '學術討論', '關於「吃」']
+        keyword_type = ['「哈」' + '\n' + '的使用頻率', '變態程度', '髒話使用', '學術討論', '關於「吃」']
         y = np.arange(len(keyword_type))  # 產生 Y 軸座標序列
         x = np.arange(0, 6, 1)  # 產生 X 軸座標序列
-        fig_square = plt.figure(figsize=(7, 4))  # 設定圖形大小
-        plt.barh(y, keyword_level)  # 繪製長條圖
+        fig_square = plt.figure(figsize=(8, 6))  # 設定圖形大小
+        plt.barh(y, keyword_level, color=['orange', 'gold', 'lightgreen', 'lightblue', 'plum'])  # 繪製長條圖
         plt.yticks(y, keyword_type)  # 設定 Y 軸刻度標籤
         x_ticks = np.arange(0, 6, 1)  # X 軸刻度陣列
         plt.xticks(x, x_ticks)  # 設定 X 軸刻度標籤
@@ -988,8 +992,8 @@ class Android:
 
         # 畫雙方通話時間圓餅圖
         if calltime[0][1] != 0 and calltime[1][1] != 0:
-            print(str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + str(calltime[0][1]))
-            print(str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + str(calltime[1][1]))
+            call1 = str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + str(calltime[0][1])
+            call2 = str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + str(calltime[1][1])
             fig_pie = plt.figure(figsize=(4, 3))  # 設定圖形大小
             labels = [calltime[0][0], calltime[1][0]]  # 是名字
             calltime_pie = [calltime[0][1], calltime[1][1]]  # 是通話時間
@@ -1008,8 +1012,8 @@ class Android:
 
             '''只有一人有打過電話'''
         if calltime[0][1] == 0 and calltime[1][1] != 0:  # 只有第一人有打過電話
-            print(str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + str(calltime[0][1]))
-            print(str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + str(calltime[1][1]))
+            call1 = str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + str(calltime[0][1])
+            call2 = str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + str(calltime[1][1])
             fig_pie = plt.figure(figsize=(4, 3))  # 設定圖形大小
             labels = [calltime[1][0]]  # 是名字
             calltime_pie = [1]  # 是通話時間
@@ -1027,8 +1031,8 @@ class Android:
             surf = pg.image.fromstring(raw_data, size, "RGB")
 
         if calltime[0][1] != 0 and calltime[1][1] == 0:  # 只有第二人有打過電話
-            print(str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + str(calltime[0][1]))
-            print(str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + str(calltime[1][1]))
+            call1 = str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + str(calltime[0][1])
+            call2 = str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + str(calltime[1][1])
             fig_pie = plt.figure(figsize=(4, 3))  # 設定圖形大小
             labels = [calltime[0][0]]  # 是名字
             calltime_pie = [1]  # 是通話時間
@@ -1046,6 +1050,8 @@ class Android:
             surf = pg.image.fromstring(raw_data, size, "RGB")
 
         if calltime[0][1] == 0 and calltime[1][1] == 0:
+            call1 = str(calltime[0][0]) + "打給對方的通話時間(分鐘): " + '0'
+            call2 = str(calltime[1][0]) + "打給對方的通話時間(分鐘): " + '0'
             surf = "你們還沒有通話過喔"
         ###############################################################################
         '''近30日雙方通話次數折線圖'''
@@ -1302,7 +1308,7 @@ class Android:
         size = canvas.get_width_height()
         surf3 = pg.image.fromstring(raw_data, size, "RGB")
 
-        return surf, surf2, surf3    # 3 surf有可能為一串文字(需設條件式)
+        return surf, surf2, surf3, call1, call2    # 3 surf有可能為一串文字(需設條件式)
 
     def others(self):
         '''雙方貼圖次數圓餅圖'''
@@ -1330,7 +1336,7 @@ class Android:
         sticker12 = str(name[1]) + "貼圖數: " + str(sticker_2)
         # 畫雙方貼圖數圓餅圖
 
-        fig_pie = plt.figure(figsize=(4, 3))  # 設定圖形大小
+        fig_pie = plt.figure(figsize=(3.5, 3.5))  # 設定圖形大小
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']
 
         labels = [name[0], name[1]]  # 名字
@@ -1391,7 +1397,7 @@ class Android:
         height = np.array([reply_timelist_1[1], reply_timelist_2[1]])  # 回覆時間
         plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']
         # 顯示圖例
-        fig_square = plt.figure(figsize=(10, 6))  # 設定圖形大小
+        fig_square = plt.figure(figsize=(5, 5))  # 設定圖形大小
         plt.bar(x_labels, height, width=0.3)
         plt.title('等待對方回覆的平均時間')  # 設定圖形標題
 
